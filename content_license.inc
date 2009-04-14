@@ -182,13 +182,8 @@ function _content_license_nodeapi(&$node, $op, $a3=Null, $page=Null) {
       $licenses = new ContentLicense($node->nid);
       $node->license = $licenses->getLicenses();
     break;
-    // The node is about to be shown on the add/edit form.
-    case 'prepare':
-    break;
     case 'prepare translation':
       $node->license = $node->translation_source->license;
-    break;
-    case 'rss item':
     break;
     // The node content is being assembled before rendering. The module may add elements $node->content prior to rendering.
     // This hook will be called after hook_view(). The format of $node->content is the same as used by Forms API.
