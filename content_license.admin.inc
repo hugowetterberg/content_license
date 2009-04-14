@@ -167,7 +167,8 @@ function _content_license_delete($form_state, $license) {
 }
 
 function _content_license_delete_submit($form, $form_state) {
-  var_dump($form['#license']); die;
+  ContentLicense::delete($form['#license']->lid);
+  drupal_goto('admin/content/licenses');
 }
 
 function _content_license_form($license=array()) {
