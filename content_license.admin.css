@@ -1,0 +1,19 @@
+#content-license-settings div.licenses {
+  float: left;
+  width: 60%;
+}
+
+#content-license-settings div.licenses .form-item .form-item {
+  border: 1px solid #999999;
+  padding: 10px;
+  margin: 10px 10px 10px 0;
+}
+
+#content-license-settings div.settings {
+  float: right;
+  width: 39%;
+}
+
+#content-license-settings div.footer {
+  clear: both;
+}

@@ -42,6 +42,16 @@ function _content_license_menu() {
     'type' => MENU_CALLBACK,
   );
 
+  $menu['admin/content/licenses/delete/%license'] = array(
+    'title' => t('Delete content license'),
+    'file' => 'content_license.admin.inc',
+    'description' => t('Delete a content license'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('_content_license_delete', 4),
+    'access arguments' => array('administer nodes'),
+    'type' => MENU_CALLBACK,
+  );
+
   $menu['content-license/info'] = array(
     'title' => t('License information'),
     'description' => t('Create a content license'),

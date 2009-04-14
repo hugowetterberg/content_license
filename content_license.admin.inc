@@ -2,32 +2,42 @@
 // $Id$
 
 function _content_license_settings($form_state) {
-  $form = array();
+  $form = array(
+    '#id' => 'content-license-settings',
+  );
+
+  drupal_add_css(drupal_get_path('module', 'content_license') . '/content_license.admin.css');
 
   $licenses = ContentLicense::load();
-  if (!empty($licenses)) {
-    $form['licenses'] = array(
-      '#type' => 'select',
-      '#title' => t('Edit a license'),
-      '#options' => array(),
-    );
+  $form['licenses'] = array(
+    '#type' => 'item',
+    '#prefix' => '<div class="licenses"><h3>' . t('Licenses') . '</h3>',
+    '#suffix' => '</div>',
+  );
 
-    foreach ($licenses as $license) {
-      $form['licenses']['#options'][$license->lid] = t($license->license_title);
-    }
-
-    $form['edit'] = array(
-      '#type' => 'submit',
-      '#value' => t('Edit'),
+  foreach ($licenses as $license) {
+    $form['licenses'][$license->lid] = array(
+      '#type' => 'item',
+      '#title' => $license->license_title,
+      '#value' => '<p>' . $license->license_description . '</p>' . theme('links', array(
+        array('title' => t('Edit'), 'href' => 'admin/content/licenses/edit/' . $license->lid),
+        array('title' => t('Delete'), 'href' => 'admin/content/licenses/delete/' . $license->lid),
+      )),
     );
   }
 
-  $form['add_license'] = array(
+  $form['licenses']['add_license'] = array(
     '#type' => 'item',
     '#value' => l(empty($licenses) ? t('No licenses have been added, click here to add one') : t('Add license'), 'admin/content/licenses/add'),
   );
 
-  $form['mode'] = array(
+  $form['settings'] = array(
+    '#type' => 'item',
+    '#prefix' => '<div class="settings"><h3>' . t('Settings') . '</h3>',
+    '#suffix' => '</div>',
+  );
+
+  $form['settings']['mode'] = array(
     '#type' => 'radios',
     '#title' => t('Licensing mode'),
     '#options' => array(
@@ -37,7 +47,7 @@ function _content_license_settings($form_state) {
     '#default_value' => variable_get('content_license_mode', 'multi'),
   );
 
-  $form['selector'] = array(
+  $form['settings']['selector'] = array(
     '#type' => 'radios',
     '#title' => t('License selection widget'),
     '#options' => array(
@@ -55,7 +65,7 @@ function _content_license_settings($form_state) {
     $show_in[] = 'full';
   }
 
-  $form['show_license_info'] = array(
+  $form['settings']['show_license_info'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Show license information in'),
     '#options' => array(
@@ -75,16 +85,18 @@ function _content_license_settings($form_state) {
     }
   }
 
-  $form['types'] = array(
+  $form['settings']['types'] = array(
     '#title' => t('Enable licensing options for'),
     '#type' => 'checkboxes',
     '#options' => $type_options,
     '#default_value' => $type_default,
   );
 
-  $form['submit'] = array(
+  $form['settings']['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Save'),
+    '#prefix' => '<div class="footer">',
+    '#suffix' => '</div>',
   );
 
   return $form;
@@ -92,23 +104,18 @@ function _content_license_settings($form_state) {
 
 function _content_license_settings_submit($form, $form_state) {
   $values = $form_state['values'];
-  if ($values['op'] == t('Save')) {
-    variable_set('content_license_mode', $values['mode']);
-    variable_set('content_license_selector', $values['selector']);
-    foreach ($values['types'] as $type => $enabled) {
-      variable_set('content_license_node_' . $type, $enabled !== 0);
-    }
-    foreach ($values['show_license_info'] as $type => $enabled) {
-      if ($type=='teaser') {
-        variable_set('content_license_show_in_teaser', $enabled !== 0);
-      }
-      else if ($type=='full') {
-        variable_set('content_license_show_in_full_node', $enabled !== 0);
-      }
-    }
+  variable_set('content_license_mode', $values['mode']);
+  variable_set('content_license_selector', $values['selector']);
+  foreach ($values['types'] as $type => $enabled) {
+    variable_set('content_license_node_' . $type, $enabled !== 0);
   }
-  else if ($values['op'] == t('Edit')) {
-    drupal_goto('admin/content/licenses/edit/' . $values['licenses']);
+  foreach ($values['show_license_info'] as $type => $enabled) {
+    if ($type=='teaser') {
+      variable_set('content_license_show_in_teaser', $enabled !== 0);
+    }
+    else if ($type=='full') {
+      variable_set('content_license_show_in_full_node', $enabled !== 0);
+    }
   }
 }
 
@@ -128,6 +135,39 @@ function _content_license_edit($form_state, $license) {
 function _content_license_edit_submit($form, $form_state) {
   ContentLicense::write($form_state['values']);
   drupal_goto('admin/content/licenses');
+}
+
+function _content_license_delete($form_state, $license) {
+  drupal_set_title(t('Deleting "@title"', array('@title' => $license->license_title)));
+  $form = array(
+    '#license' => $license,
+  );
+
+  $form['text'] = array(
+    '#value' => t('Are you sure that you want to delete the license @title?', array(
+      '@title' => $license->license_title)
+    ),
+  );
+
+  $form['warning'] = array(
+    '#value' => '<p><strong>' . t('WARNING: If there\'s content on this site owned by someone other than yourself that uses this license you have to make sure that it\'s actually within your legal rights to delete this license.') . '</strong></p>',
+  );
+
+  $form['cancel'] = array(
+    '#type' => 'item',
+    '#value' => l(t('No, take me back'), 'admin/content/licenses'),
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Yes, delete the license')
+  );
+
+  return $form;
+}
+
+function _content_license_delete_submit($form, $form_state) {
+  var_dump($form['#license']); die;
 }
 
 function _content_license_form($license=array()) {

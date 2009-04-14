@@ -189,6 +189,25 @@ class ContentLicense {
   }
 
   /**
+   * Deletes a license and all the content associations for the license.
+   * WARNING: This will set all content that's only licensed with $lid as
+   * unlicensed. In most cases this means that all rights will be reserved
+   * for the content.
+   *
+   * @param int $lid
+   *  The license to delete
+   * @return void
+   */
+  public static function delete($lid) {
+    db_query("DELETE FROM {content_license_licensed} WHERE lid=%d", array(
+      ':lid' => $lid,
+    ));
+    db_query("DELETE FROM {content_license} WHERE lid=%d", array(
+      ':lid' => $lid,
+    ));
+  }
+
+  /**
    * Saves a license to the database.
    *
    * @param array $values
