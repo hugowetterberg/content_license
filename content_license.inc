@@ -154,6 +154,8 @@ function _content_license_nodeapi(&$node, $op, $a3=Null, $page=Null) {
   switch ($op) {
     // The node is being deleted.
     case 'delete':
+      $license = new ContentLicense($node->nid);
+      $license->removeAllLicenses();
     break;
     // The node is being created (inserted in the database)
     case 'insert':
