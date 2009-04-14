@@ -70,7 +70,7 @@ function _content_license_theme() {
   $theme = array();
 
   $theme['license_info_page'] = array(
-    'template' => 'license_info',
+    'template' => 'license_info_page',
     'arguments' => array('licenses' => array()),
   );
 

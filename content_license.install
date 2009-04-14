@@ -14,6 +14,51 @@
  */
 function content_license_install() {
   drupal_install_schema('content_license');
+  _content_license_add_default_licenses();
+}
+
+function _content_license_add_default_licenses() {
+  $default_licenses = array(
+    array("Attribution",
+      "http://creativecommons.org/licenses/by/3.0/",
+      "http://i.creativecommons.org/l/by/3.0/88x31.png",
+      "This license lets others distribute, remix, tweak, and build upon your work, even commercially, as long as they credit you for the original creation. This is the most accommodating of licenses offered, in terms of what others can do with your works licensed under Attribution.",
+    ),
+    array("Attribution Share Alike",
+      "http://creativecommons.org/licenses/by-sa/3.0/",
+      "http://i.creativecommons.org/l/by-sa/3.0/88x31.png",
+      "This license lets others remix, tweak, and build upon your work even for commercial reasons, as long as they credit you and license their new creations under the identical terms. This license is often compared to open source software licenses. All new works based on yours will carry the same license, so any derivatives will also allow commercial use.",
+    ),
+    array("Attribution No Derivatives",
+      "http://creativecommons.org/licenses/by-nd/3.0/",
+      "http://i.creativecommons.org/l/by-nd/3.0/88x31.png",
+      "This license allows for redistribution, commercial and non-commercial, as long as it is passed along unchanged and in whole, with credit to you.",
+    ),
+    array("Attribution Non-Commercial",
+      "http://creativecommons.org/licenses/by-nc/3.0/",
+      "http://i.creativecommons.org/l/by-nc/3.0/88x31.png",
+      "This license lets others remix, tweak, and build upon your work non-commercially, and although their new works must also acknowledge you and be non-commercial, they don’t have to license their derivative works on the same terms.",
+    ),
+    array("Attribution Non-Commercial Share Alike",
+      "http://creativecommons.org/licenses/by-nc-sa/3.0/",
+      "http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png",
+      "This license lets others remix, tweak, and build upon your work non-commercially, as long as they credit you and license their new creations under the identical terms. Others can download and redistribute your work just like the by-nc-nd license, but they can also translate, make remixes, and produce new stories based on your work. All new work based on yours will carry the same license, so any derivatives will also be non-commercial in nature.",
+    ),
+    array("Attribution Non-Commercial No Derivatives",
+      "http://creativecommons.org/licenses/by-nc-nd/3.0/",
+      "http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png",
+      "This license is the most restrictive of our six main licenses, allowing redistribution. This license is often called the “free advertising” license because it allows others to download your works and share them with others as long as they mention you and link back to you, but they can’t change them in any way or use them commercially.",
+    ),
+  );
+
+  foreach ($default_licenses as $license) {
+    drupal_write_record('content_license', $val=array(
+      'license_title' => $license[0],
+      'license_url' => $license[1],
+      'license_badge' => $license[2],
+      'license_description' => $license[3],
+    ));
+  }
 }
 
 /**
@@ -23,6 +68,8 @@ function content_license_install() {
  */
 function content_license_uninstall() {
   drupal_uninstall_schema('content_license');
+  // Deleting the content-licensing specific variables
+  db_query("DELETE FROM {variable} WHERE name LIKE 'content_license_%'");
 }
 
 /**
@@ -37,7 +84,7 @@ function content_license_schema() {
       'fields' => array(
         'lid' => array(
           'description' => 'The primary identifier for the license.',
-          'type' => 'int',
+          'type' => 'serial',
           'unsigned' => TRUE,
           'not null' => TRUE,
         ),

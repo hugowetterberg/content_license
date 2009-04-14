@@ -1,6 +1,7 @@
 <div class="content-licenses">
 <?php
-  foreach ($licenses as $lid => $license) { ?>
+  foreach ($licenses as $lid => $license) {
+?>
     <div class="license">
       <h2><?php print $license->license_title ?></h2>
       <?php if (!empty($license->license_badge)): ?>
@@ -15,6 +16,7 @@
         <?php endif; ?>
       </div>
     </div>
-  <?php}
+<?php
+  }
 ?>
 </div>

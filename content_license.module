@@ -61,7 +61,7 @@ function content_license_form_alter(&$form) {
 function content_license_nodeapi(&$node, $op, $a3=Null, $page=Null) {
   if (variable_get('content_license_node_' . $node->type, FALSE)) {
     module_load_include('inc', 'content_license');
-    return _content_license_nodeapi($node, $op, $a3=Null, $page=Null);
+    return _content_license_nodeapi($node, $op, $a3, $page);
   }
 }
 
