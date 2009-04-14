@@ -1,0 +1,119 @@
+<?php
+
+/**
+ * @file
+ *  Module that enables the attachment of licensing information to arbitrary content
+ */
+
+/**
+ * Implementation of hook_autoload_info().
+ */
+function content_license_autoload_info() {
+  return array(
+    'ContentLicense' => array(
+      'file' => 'ContentLicense.inc',
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function content_license_menu() {
+  $menu = array();
+
+  $menu['admin/content/licenses'] = array(
+    'title' => t('Content licenses'),
+    'file' => 'content_license.admin.inc',
+    'description' => t('Administer the available content licenses'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('_content_license_settings'),
+    'access arguments' => array('administer nodes'),
+  );
+
+  $menu['admin/content/licenses/add'] = array(
+    'title' => t('Add content license'),
+    'file' => 'content_license.admin.inc',
+    'description' => t('Create a content license'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('_content_license_add'),
+    'access arguments' => array('administer nodes'),
+    'type' => MENU_CALLBACK,
+  );
+
+  $menu['admin/content/licenses/edit/%license'] = array(
+    'title' => t('Add content license'),
+    'file' => 'content_license.admin.inc',
+    'description' => t('Create a content license'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('_content_license_edit', 4),
+    'access arguments' => array('administer nodes'),
+    'type' => MENU_CALLBACK,
+  );
+
+  $menu['content-license/info'] = array(
+    'title' => t('License information'),
+    'description' => t('Create a content license'),
+    'page callback' => '_content_license_info',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+
+  return $menu;
+}
+
+/**
+ * Menu system wildcard loader for %license
+ * allowing licenses to be referenced by id
+ *
+ * @param int $lid
+ * @return stdClass
+ */
+function license_load($lid) {
+  return ContentLicense::load($lid);
+}
+
+function _content_license_info() {
+  return theme('license_info', ContentLicense::load());
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function content_license_theme() {
+  $theme = array();
+
+  $theme['license_info'] = array(
+    'template' => 'license_info',
+    'arguments' => array('licenses' => array()),
+  );
+
+  $theme['license_radios'] = array(
+    'template' => 'license_options',
+    'arguments' => array('form' => NULL, 'widget' => 'radio'),
+  );
+
+  $theme['license_checkboxes'] = array(
+    'template' => 'license_options',
+    'arguments' => array('form' => NULL, 'widget' => 'checkbox'),
+  );
+
+  return $theme;
+}
+
+/**
+ * Implementation of hook_form_alter().
+ */
+function content_license_form_alter(&$form) {
+  if ($form['#id'] == 'node-form') {
+    if (variable_get('content_license_node_' . $form['#node']->type, FALSE)) {
+      module_load_include('inc', 'content_license');
+      _content_license_node_form_alter($form);
+    }
+  }
+}
+
+function _content_license_form_support(&$form) {
+  drupal_add_css(drupal_get_path('module', 'content_license') . '/content_license.css');
+  return $form;
+}

@@ -1,0 +1,99 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ *  Implementation of hooks for install and uninstall of
+ *  the content licenses module.
+ */
+
+/**
+ * Implementation of hook_install().
+ *
+ * @return void
+ */
+function content_license_install() {
+  drupal_install_schema('content_license');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ *
+ * @return void
+ */
+function content_license_uninstall() {
+  drupal_uninstall_schema('content_license');
+}
+
+/**
+ * Implementation of hook_schema().
+ *
+ * @return array
+ *  The schema definition for content licenses.
+ */
+function content_license_schema() {
+  return array(
+    'content_license' => array(
+      'fields' => array(
+        'lid' => array(
+          'description' => 'The primary identifier for the license.',
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ),
+        'license_title' => array(
+          'description' => 'The name of the license.',
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => TRUE,
+        ),
+        'license_url' => array(
+          'description' => 'The url to the license.',
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => TRUE,
+        ),
+        'license_badge' => array(
+          'description' => 'The url to the license.',
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => TRUE,
+        ),
+        'license_description' => array(
+          'description' => 'A description of the license.',
+          'type' => 'text',
+          'not null' => TRUE,
+          'size' => 'medium',
+        ),
+      ),
+      'primary key' => array('lid'),
+    ),
+    'content_license_licensed' => array(
+      'fields' => array(
+        'lid' => array(
+          'description' => 'The primary identifier for the license.',
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ),
+        'content_id' => array(
+          'description' => 'The primary identifier for the content.',
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ),
+        'content_type' => array(
+          'description' => 'The type of the content.',
+          'type' => 'varchar',
+          'length' => 32,
+          'not null' => TRUE,
+        ),
+      ),
+      'primary key' => array('lid', 'content_id', 'content_type'),
+      'indexes' => array(
+        'license' => array('lid'),
+        'content' => array('content_id', 'content_type'),
+      )
+    ),
+  );
+}

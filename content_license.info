@@ -1,0 +1,7 @@
+; $Id$
+name = "Content licensing"
+description = "Enables the attachment of licensing information to arbitrary content"
+package = "Content licensing"
+dependencies[] = autoload
+core = "6.x"
+php = "5.2"
