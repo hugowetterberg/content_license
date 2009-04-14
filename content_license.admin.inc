@@ -47,6 +47,24 @@ function _content_license_settings($form_state) {
     '#default_value' => variable_get('content_license_selector', 'full'),
   );
 
+  $show_in = array();
+  if (variable_get('content_license_show_in_teaser', FALSE)) {
+    $show_in[] = 'teaser';
+  }
+  if (variable_get('content_license_show_in_full_node', FALSE)) {
+    $show_in[] = 'full';
+  }
+
+  $form['show_license_info'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Show license information in'),
+    '#options' => array(
+      'teaser' => t('Teaser'),
+      'full' => t('Full node'),
+    ),
+    '#default_value' => $show_in,
+  );
+
   $node_types = node_get_types();
   $type_options = array();
   $type_default = array();
@@ -79,6 +97,14 @@ function _content_license_settings_submit($form, $form_state) {
     variable_set('content_license_selector', $values['selector']);
     foreach ($values['types'] as $type => $enabled) {
       variable_set('content_license_node_' . $type, $enabled !== 0);
+    }
+    foreach ($values['show_license_info'] as $type => $enabled) {
+      if ($type=='teaser') {
+        variable_set('content_license_show_in_teaser', $enabled !== 0);
+      }
+      else if ($type=='full') {
+        variable_set('content_license_show_in_full_node', $enabled !== 0);
+      }
     }
   }
   else if ($values['op'] == t('Edit')) {

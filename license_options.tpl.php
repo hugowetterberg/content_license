@@ -8,8 +8,8 @@
     ?>
     <div class="license">
       <div class="select">
-        <input type="<?php print $widget ?>" id="<?php print $id ?>" name="<?php print $form['#id']; 
-          ?>" value="<?php print $lid ?>" <?php 
+        <input type="<?php print $widget ?>" id="<?php print $id ?>" name="<?php print "{$form['#name']}[{$lid}]";
+          ?>" value="<?php print $lid ?>" <?php
           print in_array($lid, $form['#default_value']) ? 'checked="checked"' : '' ?>/>
         <label for="<?php print $id ?>">
           <?php print $title ?>
