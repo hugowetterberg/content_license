@@ -11,9 +11,33 @@
 function content_license_autoload_info() {
   return array(
     'ContentLicense' => array(
-      'file' => 'ContentLicense.inc',
+      'file' => 'ContentLicense.php',
+    ),
+    'ContentLicenseResource' => array(
+      'file' => 'ContentLicenseResource.php',
     ),
   );
+}
+
+/**
+ * Implementation of hook_service_resource
+ */
+function content_license_service_resource() {
+  $res = array();
+  if (module_exists('services_oop')) {
+    $res['content_license'] = ServicesOop::definitionFromClass('ContentLicenseResource');
+  }
+  // print '<pre>';
+  // var_export($res); die;
+  // print '</pre>';
+  return $res;
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function content_license_perm() {
+  return array('create content licenses', 'delete content licenses', 'update content licenses');
 }
 
 /**
